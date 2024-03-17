@@ -225,8 +225,25 @@ FROM emppro ep
 WHERE hours = (SELECT max(hours) FROM emppro
 				WHERE prono = ep.prono)
 --3. Muestra el nombre de el/los empleado(s) que más horas trabaja(n) en cada proxecto.
-SELECT prono, ename, hours 
-FROM emppro ep
+SELECT prono, ename, hours
+FROM emppro ep JOIN emp e ON e.empno=ep.empno
+WHERE hours= (SELECT max(hours) FROM emppro
+				WHERE prono=ep.prono)
+--4. Muestra el nombre de el/los empleado(s) que más horas trabaja(n) en cada proyecto. Muestra también el nombre del proyecto.
+SELECT pname, ename, hours
+FROM emppro ep JOIN emp e ON e.empno = ep.empno
+JOIN pro p ON ep.prono = p.prono
 WHERE hours = (SELECT max(hours) FROM emppro
-				WHERE prono = ep.prono)
-
+				WHERE prono=ep.prono)
+--5. Para cada departamento muestra su nombre y cuantos empleados de ese departamento tienen un salario mayor al salario medio de su departamento.
+SELECT dname, count(*)
+FROM emp e JOIN dept d ON e.deptno = d.deptno
+WHERE sal > (SELECT avg(sal) FROM emp
+				WHERE deptno = d.deptno)
+GROUP BY d.deptno, dname
+--6. Para cada departamento muestra su nombre y cuantos empleados ganan más que su jefe.
+SELECT dname, count(*)
+FROM emp e JOIN dept d ON e.deptno = d.deptno
+WHERE sal > (SELECT sal FROM emp
+				WHERE empno = e.mgr)
+GROUP BY d.deptno, dname
